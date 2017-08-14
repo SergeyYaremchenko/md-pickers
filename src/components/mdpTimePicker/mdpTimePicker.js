@@ -46,7 +46,6 @@ function ClockCtrl($scope) {
     var TYPE_MINUTES = "minutes";
 
     this.$onInit = function () {
-        self.STEP_DEG = 360 / 12;
         self.steps = [];
         this.CLOCK_TYPES = {
             "hours": {
@@ -60,9 +59,9 @@ function ClockCtrl($scope) {
 
         switch (self.type) {
             case TYPE_HOURS:
-                var f = self.ampm ? 1 : 2;
+                self.STEP_DEG = self.ampm ? 360 / 12 : 360 / 24;
                 var t = self.ampm ? 12 : 23;
-                for(var i = f; i <= t; i+=f)
+                for(var i = 1; i <= t; i++)
                     self.steps.push(i);
                 if (!self.ampm) self.steps.push(0);
                 self.selected = self.time.hours() || 0;
@@ -70,6 +69,7 @@ function ClockCtrl($scope) {
 
                 break;
             case TYPE_MINUTES:
+                self.STEP_DEG = 360 / 12;
                 for(var i = 5; i <= 55; i+=5)
                     self.steps.push(i);
                 self.steps.push(0);
@@ -377,7 +377,7 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", "$mdpLocale", f
             ngModel.$validators.required = function(modelValue, viewValue) {
                 return angular.isUndefined(attrs.required) || attrs.required === false || !ngModel.$isEmpty(modelValue) || !ngModel.$isEmpty(viewValue);
             };
-            
+
             ngModel.$validators.minTime = function(modelValue, viewValue) {
                 return minTimeValidator(viewValue, scope.timeFormat, opts.minTime);
             };
